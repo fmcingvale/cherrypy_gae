@@ -270,6 +270,55 @@ class RamSession(Session):
         """Return the number of active sessions."""
         return len(self.cache)
 
+from google.appengine.api import memcache as gaemc
+
+class GaeSession(Session):
+    """
+    Implementation of sessions for Google AppEngine using the Memcache API
+    """
+    def clean_up(self):
+        """Clean up expired sessions."""
+        pass
+    
+    def _key(self):
+        return 'cherrypy-session-%s' % self.id
+        
+    def _exists(self):
+        log.info("gae._exists")
+        return gaemc.get(self._key()) is not None
+        
+    def _load(self):
+        log.info("gae._load")
+        try:
+            data = gaemc.get(self._key())
+            return pickle.loads(data)
+        except:
+            log.info("gae._load -> None")
+            return None
+        
+    def _save(self, expiration_time):
+        log.info("gae._save")
+        data = pickle.dumps((self._data, expiration_time))
+        # XXX make expiration time match expiration_time later
+        gaemc.set(self._key(), data, 60*60*60)
+    
+    def _delete(self):
+        log.info("gae._delete")
+        gaemc.delete(self._key())
+    
+    def acquire_lock(self):
+        """Acquire an exclusive lock on the currently-loaded session data."""
+        log.info("gae.lock")
+        self.locked = True
+    
+    def release_lock(self):
+        """Release the lock on the currently-loaded session data."""
+        log.info("gae.unlock")
+        self.locked = False
+    
+    def __len__(self):
+        """Return the number of active sessions."""
+        raise NotImplementedError
 
 class FileSession(Session):
     """Implementation of the File backend for sessions
