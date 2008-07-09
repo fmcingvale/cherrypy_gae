@@ -142,15 +142,15 @@ class Session(object):
         
         # Stick the clean_thread in the class, not the instance.
         # The instances are created and destroyed per-request.
-        cls = self.__class__
-        if not cls.clean_thread:
-            # clean_up is in instancemethod and not a classmethod,
-            # so that tool config can be accessed inside the method.
-            t = cherrypy.process.plugins.Monitor(
-                cherrypy.engine, self.clean_up, self.clean_freq * 60)
-            t.subscribe()
-            cls.clean_thread = t
-            t.start()
+        #cls = self.__class__
+        #if not cls.clean_thread:
+        #    # clean_up is in instancemethod and not a classmethod,
+        #    # so that tool config can be accessed inside the method.
+        #    t = cherrypy.process.plugins.Monitor(
+        #        cherrypy.engine, self.clean_up, self.clean_freq * 60)
+        #    t.subscribe()
+        #    cls.clean_thread = t
+        #    t.start()
     
     def delete(self):
         """Delete stored session data."""
