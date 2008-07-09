@@ -1,0 +1,12 @@
+# start of standard ignores
+*~
+Thumbs.db
+\#*#
+*.pyc
+*.pyo
+*.orig
+*.o
+*.so
+*.bak
+# end of standard ignores
+
